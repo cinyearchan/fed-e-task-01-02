@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test:app": "node app.js"
+    "test:app": "node app.js && node app2.js"
   },
   "author": "cinyearchan",
   "license": "MIT",

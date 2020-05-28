@@ -151,7 +151,7 @@ class Maybe {
     this._value = x
   }
   map (fn) {
-    return this.isNothing ? this : Maybe.of(fn(this._value))
+    return this.isNothing() ? this : Maybe.of(fn(this._value))
   }
 }
 
@@ -175,6 +175,16 @@ let maybe = Maybe.of([5, 6, 1])
 let ex1 = // ... 你需要实现的位置
 ```
 
+答案
+
+```js
+let ex1 = x => fp.map(fp.add(1), x)
+let r1 = maybe.map(ex1).map(log)
+// console.log(r1)
+```
+
+
+
 
 
 #### 练习2
@@ -188,6 +198,16 @@ const { Maybe, Container } = require('./support')
 let xs = Container.of(['do', 'ray', 'me', 'fa', 'so', 'la', 'ti', 'do'])
 let ex2 = // ... 你需要实现的位置
 ```
+
+答案
+
+```js
+let ex2 = x => fp.first(x)
+let r2 = xs.map(ex2).map(log)
+// console.log(r2)
+```
+
+
 
 
 
@@ -206,6 +226,17 @@ let user = { id: 2, name: "Albert" }
 let ex3 = // ... 你需要实现的位置
 ```
 
+答案
+
+```js
+// 答案
+// 非开发环境下需移除 map(log)
+let ex3 = x => safeProp("name")(x).map(log).map(x => fp.first(x)).map(log)
+ex3(user)
+```
+
+
+
 
 
 #### 练习4
@@ -222,3 +253,18 @@ let ex4 = function (n) {
   }
 }
 ```
+
+答案
+
+```js
+// 改造后
+let _ex4 = function (n) {
+  return Maybe.of(n).map(x => x === 0 ? undefined : parseInt(x))
+}
+
+// 原函数中 n = 0 的情况需要考虑
+let testValue = 0 // null // undefined
+console.log(ex4(testValue))
+console.log(_ex4(testValue))
+```
+
