@@ -25,7 +25,7 @@ class Maybe {
   }
 }
 
-module.export = {
+module.exports = {
   Maybe,
   Container
 }
