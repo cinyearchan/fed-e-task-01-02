@@ -8,8 +8,10 @@ const { log } = require('./util')
 let maybe = Maybe.of([5, 6, 1])
 
 // 答案
+// 非开发环境下需移除 map(log)
 let ex1 = x => fp.map(fp.add(1), x)
 let r1 = maybe.map(ex1).map(log)
+// [6, 7, 2]
 // console.log(r1)
 
 // ------------------------------------------------------------------------
@@ -20,6 +22,7 @@ let xs = Container.of(['do', 'ray', 'me', 'fa', 'so', 'la', 'ti', 'do'])
 // 答案
 let ex2 = x => fp.first(x)
 let r2 = xs.map(ex2).map(log)
+// do
 // console.log(r2)
 
 // ------------------------------------------------------------------------
@@ -36,8 +39,11 @@ let user = { id: 2, name: "Albert" }
 // console.log('first', r3.map(x => fp.first(x)))
 
 // 答案
+// 非开发环境下需移除 map(log)
 let ex3 = x => safeProp("name")(x).map(log).map(x => fp.first(x)).map(log)
 ex3(user)
+// Albert
+// A
 
 // ------------------------------------------------------------------------
 
