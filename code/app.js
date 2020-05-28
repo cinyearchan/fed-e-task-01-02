@@ -91,6 +91,8 @@ console.log(_averageDollar)
 // sanitizeNames(["Hello World"]) => ["hello_world"]
 let _underscore = fp.replace(/\W+/g, '_')
 
-let sanitizeNames = fp.flowRight(fp.map(_underscore), trace('转换结果为'), fp.map(fp.toLower))
+// let sanitizeNames = fp.flowRight(fp.map(_underscore), trace('转换结果为'), fp.map(fp.toLower))
+// 两次 fp.map 遍历可以优化
+let sanitizeNames = fp.map(fp.flowRight(_underscore, fp.toLower))
 let _names = sanitizeNames(["Hello World"])
 console.log(_names) // ["hello_world"]
