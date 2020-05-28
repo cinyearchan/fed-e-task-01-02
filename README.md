@@ -58,10 +58,10 @@ const cars = [
 ##### 使用函数组合 `fp.flowRight()` 重新实现下面这个函数
 ```javascript
 let isLastInStock = function (cars) {
-	// 获取最后一条数据
-	let last_car = fp.last(cars)
-	// 获取最后一条数据的 in_stock 属性值
-	return fp.prop('in_stock', last_car)
+  // 获取最后一条数据
+  let last_car = fp.last(cars)
+  // 获取最后一条数据的 in_stock 属性值
+  return fp.prop('in_stock', last_car)
 }
 ```
 
@@ -73,14 +73,14 @@ let isLastInStock = function (cars) {
 ##### 使用帮助函数 `_average` 重构 `averageDollarValue`，使用函数组合的方式实现
 ```javascript
 let _average = function (xs) {
-	return fp.reduce(fp.add, 0, xs) / xs.length // <- 无须改动
+  return fp.reduce(fp.add, 0, xs) / xs.length // <- 无须改动
 }
 
 let averageDollarValue = function (cars) {
-	let dollar_values = fp.map(function(car) {
-		return car.dollar_value
-	}, cars)
-	return _average(dollar_values)
+  let dollar_values = fp.map(function(car) {
+    return car.dollar_value
+  }, cars)
+  return _average(dollar_values)
 }
 ```
 
