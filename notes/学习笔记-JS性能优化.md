@@ -474,5 +474,263 @@ fn()
 
 #### 代码优化
 
+##### 精准测试 JavaScript 性能
 
+- 本质上就是采集大量的执行样本进行数学统计和分析，对开发人员来说不现实
+- 使用基于 Benchmark.js 的 [https://jsperf.com](https://jsperf.com/) 完成测试
+
+
+
+##### Jsperf 使用
+
+- 填写详细的测试用例信息（title、slug用于生成短链接便于访问）
+- 填写准备代码（DOM 操作时经常使用）
+- 填写必要有 setup (当前操作的前置准备动作) 与 teardown (所有代码执行完毕之后要做的销毁操作) 代码
+- 填写测试代码片段
+
+
+
+##### 优化原则
+
+- 慎用全局变量
+
+  原因：
+
+  - 全局变量定义在全局执行上下文，是所有作用域链的顶端
+  - 全局执行上下文一直存在于上下文执行栈，直到程序退出
+  - 如果某个局部作用域出现了同名变量则会遮蔽或污染全局
+
+```js
+// 全局变量
+var i, str = ''
+for (i = 0; i < 1000; i++) {
+  str += i
+}
+
+// 局部变量
+for (let i = 0; i < 1000; i++) {
+  let str = ''
+  str += i
+}
+
+```
+
+
+
+- 缓存全局变量
+
+  将使用中无法避免的全局变量缓存到局部
+
+```js
+// 未缓存全局变量
+function fn1 () {
+  let a = document.getElementById('btn1')
+  let b = document.getElementById('btn2')
+  let c = document.getElementById('btn3')
+}
+
+// 缓存全局变量
+function fn2 () {
+  let obj = document
+  let a = obj.getElementById('btn1')
+  let b = obj.getElementById('btn2')
+  let c = obj.getElementById('btn3')
+}
+
+```
+
+
+
+- 通过原型新增方法
+
+  在原型对象上新增实例对象需要的方法
+
+```js
+// 在内部直接定义方法
+var fn1 = function () {
+  this.foo = function () {
+    console.log(11111)
+  }
+}
+
+let f1 = new fn1()
+
+// 在原型对象上新增方法
+var fn2 = function () {}
+fn2.prototype.foo = function () {
+  console.log(11111)
+}
+
+let f1 = new fn1()
+
+```
+
+
+
+- 避开闭包陷阱
+
+  - 闭包是一种强大的语法
+
+  - 闭包使用不当很容易出现内存泄漏
+  - 不要为了闭包而闭包
+
+```js
+function test (func) {
+  console.log(func())
+}
+
+function test2 () {
+  var name = 'lg'
+  return name
+}
+// 1
+test(function () {
+  var name = 'lg'
+  return name
+})
+// 2 重新定义成函数进行传递，避开闭包陷阱
+test(test2)
+
+```
+
+
+
+- 避免属性访问方法使用
+
+  JS 中的面向对象
+
+  - JS 不需要属性的访问方法，所有属性都是外部可见的
+  - 使用属性访问方法只会增加一层重定义，没有访问的控制力
+
+```js
+// 1 通过属性访问方法获取属性
+function Person () {
+  this.name = 'ming'
+  this.age = 18
+  this.getAge = function () {
+    return this.age
+  }
+}
+
+const p1 = new Person()
+const a = p1.getAge()
+
+// 2 不通过属性访问方法获取属性
+function Person() {
+  this.name = 'ming'
+  this.age = 18
+}
+
+const p2 = new Person()
+const b = p2.age
+
+```
+
+
+
+- For 循环优化
+
+```js
+var arrList = []
+arrList[10000] = 'ming'
+
+// before
+for (var i = 0; i < arrList.length; i++) {
+  console.log(arrList[i])
+}
+
+// after
+for (var i = arrList.length; i; i--) {
+  console.log(arrList[i])
+}
+
+```
+
+
+
+- 选择最优的循环方法
+
+```js
+var arrList = new Array(1, 2, 3, 4, 5)
+
+// 最快 forEach
+arrList.forEach(function (item) {
+  console.log(item)
+})
+
+// 其次，优化后的 for
+for (var i = arrList.length; i; i--) {
+  console.log(arrList[i])
+}
+
+// 最慢 for in
+for (var j in arrList) {
+  console.log(arrList[j])
+}
+
+```
+
+
+
+- 节点添加优化
+
+  节点的添加操作必然会有回流和重绘
+
+```js
+for (var i = 0; i < 10; i++) {
+  var oP = document.createElement('p')
+  oP.innerHTML = i
+  document.body.appendChild(oP)
+}
+
+// 优化
+const fragEle = document.createDocumentFragment()
+for (var i = 0; i < 10; i++) {
+  var oP = document.createElement('p')
+  oP.innerHTML = i
+  // 文档碎片接收创建的节点
+  fragEle.appendChild(oP)
+}
+// 统一处理节点的插入操作
+document.body.appendChild(fragEle)
+
+```
+
+
+
+- 克隆优化节点操作
+
+```js
+// 创建节点
+for (var i = 0; i < 3; i++) {
+  var oP = document.createElement('p')
+  oP.innerHTML = i
+  document.body.appendChild(oP)
+}
+
+// 克隆节点
+// 存在相似节点 box1 => <p id="box1">old</p>
+var oldP = document.getElementById('box1')
+for (var i = 0; i < 3; i++) {
+  var newP = oldP.cloneNode(false)
+  oP.innerHTML = i
+  document.body.appendChild(oP)
+}
+
+```
+
+
+
+- 直接量替换 new Object()
+
+```js
+// before
+var a = [1, 2, 3]
+
+// after
+var a1 = new Array(3)
+a1[0] = 1
+a1[1] = 2
+a1[2] = 3
+```
 
