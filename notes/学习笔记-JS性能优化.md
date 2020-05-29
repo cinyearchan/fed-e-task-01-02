@@ -361,4 +361,4 @@ fn()
 
 ###### 增量标记
 
-<img src="增量标记.png" width="400" height="300" alt="增量标记" />
+<img src="增量标记.png" width="600" height="500" alt="增量标记" />
